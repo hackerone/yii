@@ -224,40 +224,41 @@ class CListView extends CBaseListView
 		$id=$this->getId();
 
 		if($this->ajaxUpdate===false)
-			$ajaxUpdate=array();
-		else
+			return;
+		else{
 			$ajaxUpdate=array_unique(preg_split('/\s*,\s*/',$this->ajaxUpdate.','.$id,-1,PREG_SPLIT_NO_EMPTY));
-		$options=array(
-			'ajaxUpdate'=>$ajaxUpdate,
-			'ajaxVar'=>$this->ajaxVar,
-			'pagerClass'=>$this->pagerCssClass,
-			'loadingClass'=>$this->loadingCssClass,
-			'sorterClass'=>$this->sorterCssClass,
-			'enableHistory'=>$this->enableHistory
-		);
-		if($this->ajaxUrl!==null)
-			$options['url']=CHtml::normalizeUrl($this->ajaxUrl);
-		if($this->updateSelector!==null)
-			$options['updateSelector']=$this->updateSelector;
-		foreach(array('beforeAjaxUpdate', 'afterAjaxUpdate', 'ajaxUpdateError') as $event)
-		{
-			if($this->$event!==null)
+			$options=array(
+				'ajaxUpdate'=>$ajaxUpdate,
+				'ajaxVar'=>$this->ajaxVar,
+				'pagerClass'=>$this->pagerCssClass,
+				'loadingClass'=>$this->loadingCssClass,
+				'sorterClass'=>$this->sorterCssClass,
+				'enableHistory'=>$this->enableHistory
+			);
+			if($this->ajaxUrl!==null)
+				$options['url']=CHtml::normalizeUrl($this->ajaxUrl);
+			if($this->updateSelector!==null)
+				$options['updateSelector']=$this->updateSelector;
+			foreach(array('beforeAjaxUpdate', 'afterAjaxUpdate', 'ajaxUpdateError') as $event)
 			{
-				if($this->$event instanceof CJavaScriptExpression)
-					$options[$event]=$this->$event;
-				else
-					$options[$event]=new CJavaScriptExpression($this->$event);
+				if($this->$event!==null)
+				{
+					if($this->$event instanceof CJavaScriptExpression)
+						$options[$event]=$this->$event;
+					else
+						$options[$event]=new CJavaScriptExpression($this->$event);
+				}
 			}
-		}
 
-		$options=CJavaScript::encode($options);
-		$cs=Yii::app()->getClientScript();
-		$cs->registerCoreScript('jquery');
-		$cs->registerCoreScript('bbq');
-		if($this->enableHistory)
-			$cs->registerCoreScript('history');
-		$cs->registerScriptFile($this->baseScriptUrl.'/jquery.yiilistview.js',CClientScript::POS_END);
-		$cs->registerScript(__CLASS__.'#'.$id,"jQuery('#$id').yiiListView($options);");
+			$options=CJavaScript::encode($options);
+			$cs=Yii::app()->getClientScript();
+			$cs->registerCoreScript('jquery');
+			$cs->registerCoreScript('bbq');
+			if($this->enableHistory)
+				$cs->registerCoreScript('history');
+			$cs->registerScriptFile($this->baseScriptUrl.'/jquery.yiilistview.js',CClientScript::POS_END);
+			$cs->registerScript(__CLASS__.'#'.$id,"jQuery('#$id').yiiListView($options);");
+		}
 	}
 
 	/**
